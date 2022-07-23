@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/volf52/dnsgo/pkg/dns"
 	"io/ioutil"
 	"net"
 )
@@ -15,6 +16,11 @@ func HandleErr(err error) {
 func main() {
 	queryBytes, err := ioutil.ReadFile("./test_data/query_packet")
 	HandleErr(err)
+
+	buff := dns.BufferFrom(queryBytes)
+	header := dns.ParseHeaderFrom(buff)
+
+	fmt.Println(header)
 
 	fmt.Printf("Read %d bytes\n", len(queryBytes))
 
