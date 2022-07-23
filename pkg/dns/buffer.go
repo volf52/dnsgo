@@ -25,11 +25,13 @@ func NewBuffer() *Buffer {
 
 func BufferFrom(d []byte) *Buffer {
 	l := uint16(len(d))
+	data := make([]byte, l)
+	copy(data, d)
 
 	return &Buffer{
 		pos:  0,
 		len:  l,
-		data: d,
+		data: data,
 	}
 }
 

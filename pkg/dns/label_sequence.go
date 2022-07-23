@@ -56,6 +56,7 @@ func ParseLabelSequenceFrom(buff *Buffer) *LabelSequence {
 
 		idx = buff.pos
 	}
+	buff.Pop() // pop null byte
 	domain := strings.Join(parts, ".")
 	packed := make([]byte, buff.pos-initPos)
 	copy(packed, buff.Slice(initPos, buff.pos+1))

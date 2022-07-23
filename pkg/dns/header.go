@@ -43,6 +43,7 @@ func ParseHeaderFrom(buff *Buffer) *Header {
 	anCount := innerBuff.ReadUint16()
 	nsCount := innerBuff.ReadUint16()
 	arCount := innerBuff.ReadUint16()
+	innerBuff = nil
 
 	return &Header{
 		id,
