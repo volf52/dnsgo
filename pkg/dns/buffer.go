@@ -33,8 +33,16 @@ func BufferFrom(d []byte) *Buffer {
 	}
 }
 
-func (b *Buffer) Get(n uint16) []byte {
+func (b *Buffer) GetShallow(n uint16) []byte {
 	d := b.data[b.pos : b.pos+n]
+	b.pos += n
+
+	return d
+}
+
+func (b *Buffer) Get(n uint16) []byte {
+	d := make([]byte, n)
+	copy(d, b.data[b.pos:b.pos+n])
 	b.pos += n
 
 	return d

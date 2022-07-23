@@ -17,28 +17,32 @@ type Header struct {
 	anCount uint16
 	nsCount uint16
 	arCount uint16
+
+	b []byte
 }
 
 func ParseHeader(b []byte) *Header {
 	return ParseHeaderFrom(BufferFrom(b))
 }
 
-func ParseHeaderFrom(b *Buffer) *Header {
-	if b.Remaining() < 12 {
+func ParseHeaderFrom(buff *Buffer) *Header {
+	if buff.Remaining() < 12 {
 		panic("must have >= 12 bytes to parse header")
 	}
+	b := buff.Get(12)
+	innerBuff := BufferFrom(b)
 
-	id := b.ReadUint16()
-	flagsVal := b.ReadUint16()
+	id := innerBuff.ReadUint16()
+	flagsVal := innerBuff.ReadUint16()
 	flags := ParseFlags(flagsVal)
 
 	z := (flagsVal & ZMask) >> 4
 	rcode := flagsVal & RCodeMask
 
-	qdCount := b.ReadUint16()
-	anCount := b.ReadUint16()
-	nsCount := b.ReadUint16()
-	arCount := b.ReadUint16()
+	qdCount := innerBuff.ReadUint16()
+	anCount := innerBuff.ReadUint16()
+	nsCount := innerBuff.ReadUint16()
+	arCount := innerBuff.ReadUint16()
 
 	return &Header{
 		id,
@@ -49,6 +53,7 @@ func ParseHeaderFrom(b *Buffer) *Header {
 		anCount,
 		nsCount,
 		arCount,
+		b,
 	}
 }
 
@@ -58,4 +63,8 @@ func (h *Header) String() string {
 		h.id, h.flags, h.z, h.rcode,
 		h.qdCount, h.anCount,
 	)
+}
+
+func (h *Header) Bytes() []byte {
+	return h.b
 }

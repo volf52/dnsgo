@@ -19,6 +19,8 @@ type HeaderFlags struct {
 	tc bool
 	rd bool
 	ra bool
+
+	val uint16
 }
 
 func QueryFlags() *HeaderFlags {
@@ -33,11 +35,12 @@ func QueryFlags() *HeaderFlags {
 
 func ParseFlags(container uint16) *HeaderFlags {
 	return &HeaderFlags{
-		qr: utils.IsSet(container, QrMask),
-		aa: utils.IsSet(container, AaMask),
-		tc: utils.IsSet(container, TcMask),
-		rd: utils.IsSet(container, RdMask),
-		ra: utils.IsSet(container, RaMask),
+		qr:  utils.IsSet(container, QrMask),
+		aa:  utils.IsSet(container, AaMask),
+		tc:  utils.IsSet(container, TcMask),
+		rd:  utils.IsSet(container, RdMask),
+		ra:  utils.IsSet(container, RaMask),
+		val: container,
 	}
 }
 
@@ -75,4 +78,8 @@ func (f *HeaderFlags) String() string {
 		f.rd,
 		f.ra,
 	)
+}
+
+func (f *HeaderFlags) Val() uint16 {
+	return f.val
 }
