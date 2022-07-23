@@ -19,8 +19,10 @@ func main() {
 
 	buff := dns.BufferFrom(queryBytes)
 	header := dns.ParseHeaderFrom(buff)
+	lbl := dns.ParseLabelSequenceFrom(buff)
 
 	fmt.Println(header)
+	fmt.Println(lbl)
 
 	fmt.Printf("Read %d bytes\n", len(queryBytes))
 

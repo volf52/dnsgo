@@ -1,5 +1,5 @@
 package utils
 
-func IsSet(data, mask uint16) bool {
+func IsSet[T uint8 | uint16](data, mask T) bool {
 	return (data & mask) != 0
 }
