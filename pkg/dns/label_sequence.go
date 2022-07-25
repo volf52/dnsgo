@@ -17,6 +17,26 @@ type LabelSequence struct {
 	packed []byte
 }
 
+func NewLabelSequence(domain string) *LabelSequence {
+	parts := strings.Split(domain, ".")
+	b := BufferWithCap(512)
+
+	for _, part := range parts {
+		l := len(part)
+
+		b.Write(uint8(l))
+		b.WriteSlice([]byte(part))
+	}
+
+	packed := make([]byte, b.pos+1)
+	copy(packed, b.data[:b.pos])
+
+	return &LabelSequence{
+		domain,
+		packed,
+	}
+}
+
 func ParseLabelSequence(b []byte) *LabelSequence {
 	return ParseLabelSequenceFrom(BufferFrom(b))
 }
@@ -59,7 +79,7 @@ func ParseLabelSequenceFrom(buff *Buffer) *LabelSequence {
 	buff.Pop() // pop null byte
 	domain := strings.Join(parts, ".")
 	packed := make([]byte, buff.pos-initPos)
-	copy(packed, buff.Slice(initPos, buff.pos+1))
+	copy(packed, buff.Slice(initPos, buff.pos))
 
 	return &LabelSequence{
 		domain,

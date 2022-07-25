@@ -14,12 +14,16 @@ type Buffer struct {
 const BuffLen = 1024
 
 func NewBuffer() *Buffer {
-	buff := make([]byte, BuffLen)
+	return BufferWithCap(BuffLen)
+}
+
+func BufferWithCap(cap uint16) *Buffer {
+	buff := make([]byte, cap)
 
 	return &Buffer{
 		pos:  0,
 		data: buff,
-		len:  BuffLen,
+		len:  cap,
 	}
 }
 
