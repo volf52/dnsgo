@@ -1,8 +1,10 @@
-package dns
+package header
 
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/volf52/dnsgo/pkg/dns/buffer"
+	flags2 "github.com/volf52/dnsgo/pkg/dns/header/flags"
 	"math/rand"
 )
 
@@ -12,11 +14,9 @@ const (
 	MaxId     int    = 65535 // uint16
 )
 
-var refHeaderBytes = [4]byte{1, 32}
-
 type Header struct {
 	id    uint16
-	flags *HeaderFlags
+	flags *flags2.Flags
 	z     uint16
 	rcode uint16
 
@@ -28,7 +28,7 @@ type Header struct {
 	b []byte
 }
 
-func QueryHeader() *Header {
+func ForQuery() *Header {
 	id := uint16(rand.Intn(MaxId))
 	b := make([]byte, 12)
 
@@ -37,7 +37,7 @@ func QueryHeader() *Header {
 
 	return &Header{
 		id:      id,
-		flags:   QueryFlags(),
+		flags:   flags2.ForQuery(),
 		z:       2,
 		rcode:   0,
 		qdCount: 0,
@@ -48,20 +48,20 @@ func QueryHeader() *Header {
 	}
 }
 
-func ParseHeader(b []byte) *Header {
-	return ParseHeaderFrom(BufferFrom(b))
+func Parse(b []byte) *Header {
+	return ParseFrom(buffer.From(b))
 }
 
-func ParseHeaderFrom(buff *Buffer) *Header {
+func ParseFrom(buff *buffer.Buffer) *Header {
 	if buff.Remaining() < 12 {
 		panic("must have >= 12 bytes to parse header")
 	}
 	b := buff.Get(12)
-	innerBuff := BufferFrom(b)
+	innerBuff := buffer.From(b)
 
 	id := innerBuff.ReadUint16()
 	flagsVal := innerBuff.ReadUint16()
-	flags := ParseFlags(flagsVal)
+	flags := flags2.Parse(flagsVal)
 
 	z := (flagsVal & ZMask) >> 4
 	rcode := flagsVal & RCodeMask

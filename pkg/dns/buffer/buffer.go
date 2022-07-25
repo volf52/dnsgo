@@ -1,4 +1,4 @@
-package dns
+package buffer
 
 import (
 	"encoding/binary"
@@ -13,11 +13,11 @@ type Buffer struct {
 
 const BuffLen = 1024
 
-func NewBuffer() *Buffer {
-	return BufferWithCap(BuffLen)
+func New() *Buffer {
+	return WithCap(BuffLen)
 }
 
-func BufferWithCap(cap uint16) *Buffer {
+func WithCap(cap uint16) *Buffer {
 	buff := make([]byte, cap)
 
 	return &Buffer{
@@ -27,7 +27,7 @@ func BufferWithCap(cap uint16) *Buffer {
 	}
 }
 
-func BufferFrom(d []byte) *Buffer {
+func From(d []byte) *Buffer {
 	l := uint16(len(d))
 	data := make([]byte, l)
 	copy(data, d)
@@ -56,6 +56,14 @@ func (b *Buffer) Get(n uint16) []byte {
 
 func (b *Buffer) Slice(start, end uint16) []byte {
 	return b.data[start:end]
+}
+
+func (b *Buffer) From(start uint16) []byte {
+	return b.data[start:]
+}
+
+func (b *Buffer) Till(end uint16) []byte {
+	return b.data[:end]
 }
 
 func (b *Buffer) Pop() byte {
@@ -104,6 +112,14 @@ func (b *Buffer) WriteSlice(d []byte) {
 	copy(b.data[b.pos:b.pos+l], d)
 
 	b.pos += l
+}
+
+func (b *Buffer) Pos() uint16 {
+	return b.pos
+}
+
+func (b *Buffer) Len() uint16 {
+	return b.len
 }
 
 func (b *Buffer) Bytes() []byte {

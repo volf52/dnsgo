@@ -1,4 +1,4 @@
-package dns
+package flags
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ const (
 	RaMask uint16 = 0x0080
 )
 
-type HeaderFlags struct {
+type Flags struct {
 	qr bool
 	aa bool
 	tc bool
@@ -23,8 +23,8 @@ type HeaderFlags struct {
 	val uint16
 }
 
-func QueryFlags() *HeaderFlags {
-	return &HeaderFlags{
+func ForQuery() *Flags {
+	return &Flags{
 		qr:  false,
 		aa:  false,
 		tc:  false,
@@ -34,8 +34,8 @@ func QueryFlags() *HeaderFlags {
 	}
 }
 
-func ParseFlags(container uint16) *HeaderFlags {
-	return &HeaderFlags{
+func Parse(container uint16) *Flags {
+	return &Flags{
 		qr:  utils.IsSet(container, QrMask),
 		aa:  utils.IsSet(container, AaMask),
 		tc:  utils.IsSet(container, TcMask),
@@ -45,7 +45,7 @@ func ParseFlags(container uint16) *HeaderFlags {
 	}
 }
 
-func (f *HeaderFlags) Pack() uint16 {
+func (f *Flags) Bytes() uint16 {
 	b := uint16(0)
 
 	if f.qr {
@@ -71,7 +71,7 @@ func (f *HeaderFlags) Pack() uint16 {
 	return b
 }
 
-func (f *HeaderFlags) String() string {
+func (f *Flags) String() string {
 	return fmt.Sprintf("QR=%t AA=%t TC=%t RD=%t RA=%t",
 		f.qr,
 		f.aa,
@@ -81,6 +81,6 @@ func (f *HeaderFlags) String() string {
 	)
 }
 
-func (f *HeaderFlags) Val() uint16 {
+func (f *Flags) Val() uint16 {
 	return f.val
 }

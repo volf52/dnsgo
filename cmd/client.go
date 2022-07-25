@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/volf52/dnsgo/pkg/dns"
+	"github.com/volf52/dnsgo/pkg/dns/packet"
 	"io/ioutil"
 	"net"
 )
@@ -14,12 +14,7 @@ func HandleErr(err error) {
 }
 
 func main() {
-	//queryBytes, err := ioutil.ReadFile("./test_data/query_packet")
-	//HandleErr(err)
-	//
-	//fmt.Printf("Read %d bytes\n", len(queryBytes))
-
-	p := dns.IpQuery("google.com")
+	p := packet.IpQuery("google.com")
 	queryBytes := p.Bytes()
 
 	dnsAddr, err := net.ResolveUDPAddr("udp4", "8.8.8.8:53")

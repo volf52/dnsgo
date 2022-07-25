@@ -1,4 +1,4 @@
-package dns
+package record_type
 
 import (
 	"encoding/binary"
@@ -14,7 +14,7 @@ const (
 	AAAA    RecordType = 28
 )
 
-func NewRecordType(val uint16) RecordType {
+func New(val uint16) RecordType {
 	return RecordType(val)
 }
 

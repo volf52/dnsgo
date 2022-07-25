@@ -1,8 +1,9 @@
-package dns
+package label_sequence
 
 import (
 	"fmt"
 	"github.com/volf52/dnsgo/internal/utils"
+	"github.com/volf52/dnsgo/pkg/dns/buffer"
 	"strings"
 )
 
@@ -17,9 +18,9 @@ type LabelSequence struct {
 	packed []byte
 }
 
-func NewLabelSequence(domain string) *LabelSequence {
+func New(domain string) *LabelSequence {
 	parts := strings.Split(domain, ".")
-	b := BufferWithCap(512)
+	b := buffer.WithCap(512)
 
 	for _, part := range parts {
 		l := len(part)
@@ -28,8 +29,8 @@ func NewLabelSequence(domain string) *LabelSequence {
 		b.WriteSlice([]byte(part))
 	}
 
-	packed := make([]byte, b.pos+1)
-	copy(packed, b.data[:b.pos])
+	packed := make([]byte, b.Pos()+1)
+	copy(packed, b.Till(b.Pos()))
 
 	return &LabelSequence{
 		domain,
@@ -37,12 +38,12 @@ func NewLabelSequence(domain string) *LabelSequence {
 	}
 }
 
-func ParseLabelSequence(b []byte) *LabelSequence {
-	return ParseLabelSequenceFrom(BufferFrom(b))
+func Parse(b []byte) *LabelSequence {
+	return ParseFrom(buffer.From(b))
 }
 
-func ParseLabelSequenceFrom(buff *Buffer) *LabelSequence {
-	initPos := buff.pos
+func ParseFrom(buff *buffer.Buffer) *LabelSequence {
+	initPos := buff.Pos()
 
 	if utils.IsSet(buff.Peek(), JmpByte) {
 		if buff.Remaining() < 2 {
@@ -52,21 +53,21 @@ func ParseLabelSequenceFrom(buff *Buffer) *LabelSequence {
 		jmpIdx := buff.ReadUint16()
 		jmpIdx ^= JmpMask
 
-		if jmpIdx > buff.pos {
+		if jmpIdx > buff.Pos() {
 			panic("invalid jmp idx")
 		}
 
-		slice := buff.Slice(jmpIdx, buff.len)
+		slice := buff.Slice(jmpIdx, buff.Len())
 
-		return ParseLabelSequence(slice)
+		return Parse(slice)
 	}
 
-	idx := buff.pos
+	idx := initPos
 	var parts []string
-	for idx < buff.len && buff.Peek() != 0x0 {
+	for idx < buff.Len() && buff.Peek() != 0x0 {
 		partLen := uint16(buff.Pop())
 
-		if idx+partLen >= buff.len {
+		if idx+partLen >= buff.Len() {
 			panic("invalid part length")
 		}
 
@@ -74,12 +75,12 @@ func ParseLabelSequenceFrom(buff *Buffer) *LabelSequence {
 		part := string(b)
 		parts = append(parts, part)
 
-		idx = buff.pos
+		idx = buff.Pos()
 	}
 	buff.Pop() // pop null byte
 	domain := strings.Join(parts, ".")
-	packed := make([]byte, buff.pos-initPos)
-	copy(packed, buff.Slice(initPos, buff.pos))
+	packed := make([]byte, buff.Pos()-initPos)
+	copy(packed, buff.Slice(initPos, buff.Pos()))
 
 	return &LabelSequence{
 		domain,
@@ -89,6 +90,14 @@ func ParseLabelSequenceFrom(buff *Buffer) *LabelSequence {
 
 func (lbl *LabelSequence) Domain() string {
 	return lbl.domain
+}
+
+func (lbl *LabelSequence) Len() int {
+	return len(lbl.packed)
+}
+
+func (lbl *LabelSequence) Data() []byte {
+	return lbl.packed
 }
 
 func (lbl *LabelSequence) String() string {
