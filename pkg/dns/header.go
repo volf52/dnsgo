@@ -1,11 +1,18 @@
 package dns
 
-import "fmt"
+import (
+	"encoding/binary"
+	"fmt"
+	"math/rand"
+)
 
 const (
 	ZMask     uint16 = 0x70
 	RCodeMask uint16 = 0x0F
+	MaxId     int    = 65535 // uint16
 )
+
+var refHeaderBytes = [4]byte{1, 32}
 
 type Header struct {
 	id    uint16
@@ -19,6 +26,26 @@ type Header struct {
 	arCount uint16
 
 	b []byte
+}
+
+func QueryHeader() *Header {
+	id := uint16(rand.Intn(MaxId))
+	b := make([]byte, 12)
+
+	binary.BigEndian.PutUint16(b, id)
+	binary.BigEndian.PutUint16(b[2:4], 288)
+
+	return &Header{
+		id:      id,
+		flags:   QueryFlags(),
+		z:       2,
+		rcode:   0,
+		qdCount: 0,
+		anCount: 0,
+		nsCount: 0,
+		arCount: 0,
+		b:       b,
+	}
 }
 
 func ParseHeader(b []byte) *Header {
@@ -56,6 +83,18 @@ func ParseHeaderFrom(buff *Buffer) *Header {
 		arCount,
 		b,
 	}
+}
+
+func (h *Header) IncQuestionCount() {
+	h.qdCount += 1
+
+	binary.BigEndian.PutUint16(h.b[4:6], h.qdCount)
+}
+
+func (h *Header) IncAnswerCount() {
+	h.anCount += 1
+
+	binary.BigEndian.PutUint16(h.b[6:8], h.anCount)
 }
 
 func (h *Header) String() string {

@@ -25,11 +25,12 @@ type HeaderFlags struct {
 
 func QueryFlags() *HeaderFlags {
 	return &HeaderFlags{
-		qr: false,
-		aa: false,
-		tc: false,
-		rd: true,
-		ra: false,
+		qr:  false,
+		aa:  false,
+		tc:  false,
+		rd:  true,
+		ra:  false,
+		val: 256,
 	}
 }
 

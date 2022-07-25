@@ -14,18 +14,13 @@ func HandleErr(err error) {
 }
 
 func main() {
-	queryBytes, err := ioutil.ReadFile("./test_data/query_packet")
-	HandleErr(err)
+	//queryBytes, err := ioutil.ReadFile("./test_data/query_packet")
+	//HandleErr(err)
+	//
+	//fmt.Printf("Read %d bytes\n", len(queryBytes))
 
-	buff := dns.BufferFrom(queryBytes)
-	header := dns.ParseHeaderFrom(buff)
-	//lbl := dns.ParseLabelSequenceFrom(buff)
-	q := dns.ParseQuestionFrom(buff)
-
-	fmt.Println(header)
-	fmt.Println(q)
-
-	fmt.Printf("Read %d bytes\n", len(queryBytes))
+	p := dns.IpQuery("google.com")
+	queryBytes := p.Bytes()
 
 	dnsAddr, err := net.ResolveUDPAddr("udp4", "8.8.8.8:53")
 	HandleErr(err)
@@ -51,8 +46,6 @@ func main() {
 }
 
 func CloseSocket(sock *net.UDPConn) {
-	func(conn *net.UDPConn) {
-		err := conn.Close()
-		HandleErr(err)
-	}(sock)
+	err := sock.Close()
+	HandleErr(err)
 }
