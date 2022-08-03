@@ -82,6 +82,10 @@ func (b *Buffer) ReadUint16() uint16 {
 	return binary.BigEndian.Uint16(b.Get(2))
 }
 
+func (b *Buffer) ReadUint32() uint32 {
+	return binary.BigEndian.Uint32(b.Get(4))
+}
+
 func (b *Buffer) Peek() byte {
 	return b.data[b.pos]
 }

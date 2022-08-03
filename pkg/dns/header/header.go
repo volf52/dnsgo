@@ -3,9 +3,10 @@ package header
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/volf52/dnsgo/pkg/dns/buffer"
-	flags2 "github.com/volf52/dnsgo/pkg/dns/header/flags"
 	"math/rand"
+
+	"github.com/volf52/dnsgo/pkg/dns/buffer"
+	dnsFlags "github.com/volf52/dnsgo/pkg/dns/header/flags"
 )
 
 const (
@@ -16,7 +17,7 @@ const (
 
 type Header struct {
 	id    uint16
-	flags *flags2.Flags
+	flags *dnsFlags.Flags
 	z     uint16
 	rcode uint16
 
@@ -37,7 +38,7 @@ func ForQuery() *Header {
 
 	return &Header{
 		id:      id,
-		flags:   flags2.ForQuery(),
+		flags:   dnsFlags.ForQuery(),
 		z:       2,
 		rcode:   0,
 		qdCount: 0,
@@ -61,7 +62,7 @@ func ParseFrom(buff *buffer.Buffer) *Header {
 
 	id := innerBuff.ReadUint16()
 	flagsVal := innerBuff.ReadUint16()
-	flags := flags2.Parse(flagsVal)
+	flags := dnsFlags.Parse(flagsVal)
 
 	z := (flagsVal & ZMask) >> 4
 	rcode := flagsVal & RCodeMask

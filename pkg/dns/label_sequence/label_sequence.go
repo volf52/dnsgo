@@ -2,9 +2,10 @@ package label_sequence
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/volf52/dnsgo/internal/utils"
 	"github.com/volf52/dnsgo/pkg/dns/buffer"
-	"strings"
 )
 
 const (

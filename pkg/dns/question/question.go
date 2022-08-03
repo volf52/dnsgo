@@ -37,6 +37,7 @@ func Parse(b []byte) *Question {
 }
 
 func ParseFrom(buff *buffer.Buffer) *Question {
+	initPos := buff.Pos()
 	lbl := label_sequence.ParseFrom(buff)
 	if buff.Remaining() < 4 {
 		panic("not enough bytes left to parse question")
@@ -45,11 +46,7 @@ func ParseFrom(buff *buffer.Buffer) *Question {
 	rType := record_type.New(buff.ReadUint16())
 	_ = buff.ReadUint16()
 
-	lblBytesLen := lbl.Len()
-
-	packed := make([]byte, lblBytesLen+4)
-	copy(packed[:lblBytesLen], lbl.Data())
-	copy(packed[lblBytesLen:], buff.Slice(buff.Pos()-4, buff.Pos()))
+	packed := buff.Slice(initPos, buff.Pos())
 
 	return &Question{
 		lbl,
