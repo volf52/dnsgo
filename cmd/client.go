@@ -5,11 +5,7 @@ import (
 	"io/ioutil"
 	"net"
 
-	"github.com/volf52/dnsgo/pkg/dns/answer"
-	"github.com/volf52/dnsgo/pkg/dns/buffer"
-	"github.com/volf52/dnsgo/pkg/dns/header"
 	"github.com/volf52/dnsgo/pkg/dns/packet"
-	"github.com/volf52/dnsgo/pkg/dns/question"
 )
 
 func HandleErr(err error) {
@@ -41,21 +37,9 @@ func main() {
 
 	fmt.Printf("Received %d bytes...\n", n)
 
-	respBuff := buffer.From(buff[:n])
-	respHeader := header.ParseFrom(respBuff)
-	respQ := question.ParseFrom(respBuff)
-	ans := answer.ParseFrom(respBuff)
-	ans2 := answer.ParseFrom(respBuff)
+	resp := packet.FromResponse(buff[:n])
 
-	fmt.Println("---- Headers ---- ")
-	fmt.Println(respHeader)
-
-	fmt.Println("---- Questions ---- ")
-	fmt.Println(respQ)
-
-	fmt.Println("---- Answers ---- ")
-	fmt.Println(ans)
-	fmt.Println(ans2)
+	fmt.Print(resp)
 
 	err = ioutil.WriteFile("lala", buff[:n], 0644)
 	HandleErr(err)

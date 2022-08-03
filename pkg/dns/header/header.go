@@ -92,6 +92,14 @@ func (h *Header) IncQuestionCount() {
 	binary.BigEndian.PutUint16(h.b[4:6], h.qdCount)
 }
 
+func (h *Header) QdCount() uint16  {
+	return h.qdCount
+}
+
+func (h *Header) AnsCount() uint16  {
+	return h.anCount
+}
+
 func (h *Header) IncAnswerCount() {
 	h.anCount += 1
 

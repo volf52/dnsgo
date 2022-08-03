@@ -74,13 +74,11 @@ func ParseFrom(buff *buffer.Buffer) *Answer {
 }
 
 func parseIp(buff *buffer.Buffer) string {
-	parts := make([]string, 0, 4)
+	parts := make([]string, 4)
 
 	for i := 0; i < 4; i++ {
 		b := buff.Pop()
-		bStr := strconv.Itoa(int(b))
-
-		parts = append(parts, bStr)
+		parts[i] = strconv.Itoa(int(b))
 	}
 
 	return strings.Join(parts, ".")
