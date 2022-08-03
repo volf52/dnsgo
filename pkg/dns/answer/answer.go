@@ -1,4 +1,4 @@
-package response
+package answer
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/volf52/dnsgo/pkg/dns/record_type"
 )
 
-type Response struct {
+type Answer struct {
 	lbl *label_sequence.LabelSequence
 
 	rType    record_type.RecordType
@@ -21,11 +21,11 @@ type Response struct {
 	packed []byte
 }
 
-func Parse(b []byte) *Response {
+func Parse(b []byte) *Answer {
 	return ParseFrom(buffer.From(b))
 }
 
-func ParseFrom(buff *buffer.Buffer) *Response {
+func ParseFrom(buff *buffer.Buffer) *Answer {
 	initPos := buff.Pos()
 	lbl := label_sequence.ParseFrom(buff)
 	if buff.Remaining() < 10 {
@@ -63,7 +63,7 @@ func ParseFrom(buff *buffer.Buffer) *Response {
 	packed := make([]byte, len(s))
 	copy(packed, s)
 
-	return &Response{
+	return &Answer{
 		lbl,
 		rType,
 		ttl,
@@ -103,10 +103,10 @@ func parseIpv6(buff *buffer.Buffer) string {
 	return sb.String()
 }
 
-func (r *Response) String() string {
+func (r *Answer) String() string {
 	return fmt.Sprintf("%s\tIN\t%s\t%s", r.lbl, r.rType, r.rData)
 }
 
-func (r *Response) Bytes() []byte {
+func (r *Answer) Bytes() []byte {
 	return r.packed
 }
