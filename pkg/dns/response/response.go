@@ -34,7 +34,7 @@ func ParseFrom(buff *buffer.Buffer) *Response {
 
 	rTypeVal := buff.ReadUint16()
 	rType := record_type.New(rTypeVal)
-	fmt.Printf("rType: %d for %s\n", rTypeVal, lbl.Domain())
+
 	_ = buff.ReadUint16() // class
 	ttl := buff.ReadUint32()
 	rDataLen := buff.ReadUint16()
@@ -74,18 +74,14 @@ func ParseFrom(buff *buffer.Buffer) *Response {
 }
 
 func parseIp(buff *buffer.Buffer) string {
-	fmt.Printf("Remaining %d bytes\n", buff.Remaining())
-	parts := make([]string, 4)
+	parts := make([]string, 0, 4)
 
 	for i := 0; i < 4; i++ {
 		b := buff.Pop()
-		fmt.Printf("Popped %d\n", b)
 		bStr := strconv.Itoa(int(b))
-		fmt.Printf("Conv %s \n", bStr)
 
 		parts = append(parts, bStr)
 	}
-	fmt.Printf("Remaining %d bytes\n", buff.Remaining())
 
 	return strings.Join(parts, ".")
 }
